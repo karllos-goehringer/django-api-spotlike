@@ -10,7 +10,12 @@ router.register(r'generos', viewsets.GeneroMusicalViewSet)
 router.register(r'songs', viewsets.SongsViewSet)
 router.register(r'playlists', viewsets.PlaylistViewSet)
 router.register(r'users', viewsets.UsersViewSet)
-
+router.register(r'albumartist', viewsets.AlbumartistViewSet)
+router.register(r'albumband', viewsets.AlbumbandViewSet)
+router.register(r'albummusica', viewsets.AlbummusicaViewSet)
+router.register(r'artistsband', viewsets.ArtistsbandViewSet)
+router.register(r'songsplaylist', viewsets.SongsplaylistViewSet)
+router.register(r'usersplaylists', viewsets.UsersplaylistsViewSet)
 urlpatterns = [
     path('', include(router.urls)),
 ]

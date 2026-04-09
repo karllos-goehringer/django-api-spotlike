@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Artist, Band, Album, GeneroMusical, Songs, Playlist, Users
+from .models import Artist, Band, Album, GeneroMusical, Songs, Playlist, Users, Albumartist, Albumband, Albummusica, Artistsband, Songsplaylist, Usersplaylists
 
 class UsersAdmin(admin.ModelAdmin):
     list_display = ('pk_userid', 'email', 'profilepicture')
@@ -22,6 +22,24 @@ class SongsAdmin(admin.ModelAdmin):
 class PlaylistAdmin(admin.ModelAdmin):
     list_display = ('pk_playlistid', 'plname')
     pass
+class AlbumartistAdmin(admin.ModelAdmin):
+    list_display = ('pk_albumartistid', 'album', 'artist')
+    pass
+class AlbumbandAdmin(admin.ModelAdmin):
+    list_display = ('pk_albumbandid', 'album', 'band')
+    pass
+class AlbummusicaAdmin(admin.ModelAdmin):
+    list_display = ('pk_albummusicaid', 'album', 'musica')
+    pass
+class ArtistsbandAdmin(admin.ModelAdmin):
+    list_display = ('pk_artistsbandid', 'artist', 'band')
+    pass
+class SongsplaylistAdmin(admin.ModelAdmin):
+    list_display = ('pk_songsplaylistid', 'song', 'playlist')
+    pass
+class UsersplaylistAdmin(admin.ModelAdmin):
+    list_display = ('pk_usersplaylistid', 'user', 'playlist')
+    pass
 
 admin.site.register(Users, UsersAdmin)
 admin.site.register(Artist, ArtistAdmin)
@@ -30,3 +48,9 @@ admin.site.register(Album, AlbumAdmin)
 admin.site.register(GeneroMusical, GeneroMusicalAdmin)
 admin.site.register(Songs, SongsAdmin)
 admin.site.register(Playlist, PlaylistAdmin)
+admin.site.register(Albumartist, AlbumartistAdmin)
+admin.site.register(Albumband, AlbumbandAdmin)
+admin.site.register(Albummusica, AlbummusicaAdmin)
+admin.site.register(Artistsband, ArtistsbandAdmin)
+admin.site.register(Songsplaylist, SongsplaylistAdmin)
+admin.site.register(Usersplaylists, UsersplaylistAdmin)

@@ -37,3 +37,34 @@ class UsersViewSet(viewsets.ModelViewSet):
     queryset = models.Users.objects.all()
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+
+class AlbumartistViewSet(viewsets.ModelViewSet):
+    queryset = models.Albumartist.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+
+class AlbumbandViewSet(viewsets.ModelViewSet):
+    queryset = models.Albumband.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+
+class AlbummusicaViewSet(viewsets.ModelViewSet):
+    queryset = models.Albummusica.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+
+class ArtistsbandViewSet(viewsets.ModelViewSet):
+    queryset = models.Artistsband.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+
+class SongsplaylistViewSet(viewsets.ModelViewSet):
+    queryset = models.Songsplaylist.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+
+class UsersplaylistsViewSet(viewsets.ModelViewSet):
+    queryset = models.Usersplaylists.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+

@@ -23,22 +23,22 @@ class PlaylistAdmin(admin.ModelAdmin):
     list_display = ('pk_playlistid', 'plname')
     pass
 class AlbumartistAdmin(admin.ModelAdmin):
-    list_display = ('pk_albumartistid', 'album', 'artist')
+    list_display = ('album', 'artist')
     pass
 class AlbumbandAdmin(admin.ModelAdmin):
-    list_display = ('pk_albumbandid', 'album', 'band')
+    list_display = ('album', 'band')
     pass
 class AlbummusicaAdmin(admin.ModelAdmin):
-    list_display = ('pk_albummusicaid', 'album', 'musica')
+    list_display = ('album', 'songs')
     pass
 class ArtistsbandAdmin(admin.ModelAdmin):
-    list_display = ('pk_artistsbandid', 'artist', 'band')
+    list_display = ('artist', 'band')
     pass
 class SongsplaylistAdmin(admin.ModelAdmin):
-    list_display = ('pk_songsplaylistid', 'song', 'playlist')
+    list_display = ('songs', 'playlist')
     pass
 class UsersplaylistAdmin(admin.ModelAdmin):
-    list_display = ('pk_usersplaylistid', 'user', 'playlist')
+    list_display = ('users', 'playlist')
     pass
 
 admin.site.register(Users, UsersAdmin)

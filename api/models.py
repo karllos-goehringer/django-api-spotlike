@@ -24,7 +24,7 @@ class Album(models.Model):
     pk_albumid = models.AutoField(db_column='PK_albumID', primary_key=True)
     albumname = models.CharField(db_column='albumName', max_length=100)
     releasedate = models.DateField(db_column='releaseDate', blank=True, null=True)
-
+    albumimage = models.CharField(db_column='albumimage',blank=True, null=True,max_length=2048)
     class Meta:
         managed = False
         db_table = 'album'

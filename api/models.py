@@ -4,7 +4,7 @@ class Artist(models.Model):
     pk_artistid = models.AutoField(db_column='PK_artistID', primary_key=True)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
-    imageartist = models.CharField(db_column='imageArtist', max_length=2048, blank=True, null=True)
+    imageartist = models.FileField(upload_to='images/')
 
     class Meta:
         managed = False
@@ -14,7 +14,7 @@ class Band(models.Model):
     pk_bandid = models.AutoField(db_column='PK_bandID', primary_key=True)
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=300, blank=True, null=True)
-    imageband = models.CharField(db_column='imageBand', max_length=2048, blank=True, null=True)
+    imageband = models.FileField(upload_to='images/')
 
     class Meta:
         managed = False
@@ -24,7 +24,7 @@ class Album(models.Model):
     pk_albumid = models.AutoField(db_column='PK_albumID', primary_key=True)
     albumname = models.CharField(db_column='albumName', max_length=100)
     releasedate = models.DateField(db_column='releaseDate', blank=True, null=True)
-    albumimage = models.CharField(db_column='albumimage',blank=True, null=True,max_length=2048)
+    albumimage =  models.FileField(upload_to='images/')
     class Meta:
         managed = False
         db_table = 'album'
@@ -32,9 +32,8 @@ class Album(models.Model):
 from django.db import models
 
 class GeneroMusical(models.Model):
-    # O Django cria o ID automatico, mas se quiser seguir o banco:
     idgeneroMusical = models.AutoField(primary_key=True)
-    nome = models.CharField(max_length=45)
+    nomeGenero = models.CharField(max_length=45)
 
     class Meta:
         db_table = 'generomusical'
@@ -42,6 +41,7 @@ class GeneroMusical(models.Model):
 class Songs(models.Model):
     PK_songID = models.AutoField(primary_key=True)
     songTitle = models.CharField(max_length=150)
+    songPath = models.FileField(upload_to='songs/')
     timeMusic = models.TimeField(null=True, blank=True)
     lyrics = models.TextField(null=True, blank=True)
     genero = models.ForeignKey(
@@ -71,7 +71,7 @@ class Users(models.Model):
         managed = False
         db_table = 'users'
 
-# TABELAS INTERMEDIÁRIAS (Ajustadas para evitar erro de Composite Key)
+# TABELAS INTERMEDIÁRIAS 
 
 class Albumartist(models.Model):
     artist = models.ForeignKey(Artist, models.DO_NOTHING, db_column='artist_PK_artistID', primary_key=True)

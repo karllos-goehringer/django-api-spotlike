@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Artist, Band, Album, GeneroMusical, Songs, Playlist, Users, Albumartist, Albumband, Albummusica, Artistsband, Songsplaylist, Usersplaylists
+from .models import Artist, Band, Album, GeneroMusical, Songs, Playlist, Users, Albumartist, Albumband, Artistsband, Songsplaylist, Usersplaylists
 
 class UsersAdmin(admin.ModelAdmin):
     list_display = ('pk_userid', 'email', 'profilepicture')
@@ -28,9 +28,6 @@ class AlbumartistAdmin(admin.ModelAdmin):
 class AlbumbandAdmin(admin.ModelAdmin):
     list_display = ('album', 'band')
     pass
-class AlbummusicaAdmin(admin.ModelAdmin):
-    list_display = ('album', 'songs')
-    pass
 class ArtistsbandAdmin(admin.ModelAdmin):
     list_display = ('artist', 'band')
     pass
@@ -50,7 +47,6 @@ admin.site.register(Songs, SongsAdmin)
 admin.site.register(Playlist, PlaylistAdmin)
 admin.site.register(Albumartist, AlbumartistAdmin)
 admin.site.register(Albumband, AlbumbandAdmin)
-admin.site.register(Albummusica, AlbummusicaAdmin)
 admin.site.register(Artistsband, ArtistsbandAdmin)
 admin.site.register(Songsplaylist, SongsplaylistAdmin)
 admin.site.register(Usersplaylists, UsersplaylistAdmin)

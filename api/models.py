@@ -49,6 +49,11 @@ class Songs(models.Model):
         on_delete=models.CASCADE, 
         db_column='generomusical_idgeneroMusical'
     )
+    album = models.ForeignKey(
+        Album,
+        on_delete=models.CASCADE,
+        db_column='album_PK_albumID'
+    )
 
     class Meta:
         db_table = 'songs'
@@ -91,14 +96,6 @@ class Albumband(models.Model):
         db_table = 'albumband'
         unique_together = (('band', 'album'),)
 
-class Albummusica(models.Model):
-    album = models.ForeignKey(Album, models.DO_NOTHING, db_column='album_PK_albumID', primary_key=True)
-    songs = models.ForeignKey(Songs, models.DO_NOTHING, db_column='songs_PK_songID')
-
-    class Meta:
-        managed = False
-        db_table = 'albummusica'
-        unique_together = (('album', 'songs'),)
 
 class Artistsband(models.Model):
     artist = models.ForeignKey(Artist, models.DO_NOTHING, db_column='artist_PK_artistID', primary_key=True)

@@ -46,11 +46,6 @@ class AlbumbandSerializer(serializers.ModelSerializer):
         model = models.Albumband
         fields = '__all__'
 
-class AlbummusicaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Albummusica
-        fields = '__all__'
-
 class ArtistsbandSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Artistsband

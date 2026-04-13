@@ -48,11 +48,6 @@ class AlbumbandViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
 
-class AlbummusicaViewSet(viewsets.ModelViewSet):
-    queryset = models.Albummusica.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
-
 class ArtistsbandViewSet(viewsets.ModelViewSet):
     queryset = models.Artistsband.objects.all()
     permission_classes = [permissions.IsAuthenticated]

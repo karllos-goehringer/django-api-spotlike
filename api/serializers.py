@@ -60,3 +60,31 @@ class UsersplaylistsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Usersplaylists
         fields = '__all__'
+
+# Serializer personalizado para criar playlist
+class CreatePlaylistSerializer(serializers.Serializer):
+    plName = serializers.CharField(max_length=45, required=True)
+    
+    def create(self, validated_data):
+        """
+        Cria uma nova playlist e associa ao usuário logado.
+        Retorna a instância da Usersplaylists criada.
+        """
+        user = self.context['request'].user
+        
+        # Converte o usuário Django para modelo Users (se necessário)
+        try:
+            spotlike_user = models.Users.objects.get(pk_userid=user.id)
+        except models.Users.DoesNotExist:
+            raise serializers.ValidationError("Usuário não encontrado no banco de dados da aplicação.")
+        
+        # Cria a playlist
+        playlist = models.Playlist.objects.create(plName=validated_data['plName'])
+        
+        # Cria a associação entre usuário e playlist
+        usersplaylist = models.Usersplaylists.objects.create(
+            users_PK_userID=spotlike_user,
+            playlist_PK_playlistID=playlist
+        )
+        
+        return usersplaylist

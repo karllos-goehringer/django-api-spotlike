@@ -61,7 +61,23 @@ class PlaylistViewSet(viewsets.ModelViewSet):
         response_serializer = serializers.UsersplaylistsSerializer(usersplaylist)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
-    
+    @action(detail=False, methods=['post'], serializer_class=serializers.AddSongPlaylistSerializer)
+    def add_song(self, request):
+        """Adiciona uma música a uma playlist existente."""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        songsplaylist = serializer.save()
+        response_serializer = serializers.SongsplaylistSerializer(songsplaylist)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['post'], serializer_class=serializers.RemoveSongPlaylistSerializer)
+    def remove_song(self, request):
+        """Remove uma música de uma playlist existente."""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.delete(serializer.validated_data)
+        return Response({'detail': 'Música removida da playlist'}, status=status.HTTP_200_OK)
+
 class UsersViewSet(viewsets.ModelViewSet):
     queryset = models.Users.objects.all()
     serializer_class = serializers.UsersSerializer

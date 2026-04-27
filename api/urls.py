@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from . import viewsets
+from . import viewsets, views
 
 router = DefaultRouter()
 router.register(r'artists', viewsets.ArtistViewSet)
@@ -15,6 +15,8 @@ router.register(r'albumband', viewsets.AlbumbandViewSet)
 router.register(r'artistsband', viewsets.ArtistsbandViewSet)
 router.register(r'songsplaylist', viewsets.SongsplaylistViewSet)
 router.register(r'usersplaylists', viewsets.UsersplaylistsViewSet)
+
 urlpatterns = [
+    path('login/', views.login, name='login'),
     path('', include(router.urls)),
 ]

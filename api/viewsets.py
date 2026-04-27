@@ -23,11 +23,71 @@ class AlbumViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
 
+    @action(detail=True, methods=['get'])
+    def songs(self, request, pk=None):
+        """
+        Retorna todas as músicas de um álbum específico.
+        
+        Exemplo: GET /api/albums/1/songs/
+        """
+        album = self.get_object()
+        songs = models.Songs.objects.filter(album_pk_albumid1=album)
+        serializer = serializers.SongsSerializer(songs, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def get_owner(self, request, pk=None):
+        """
+        Busca o artista ou a banda vinculada a este álbum através das tabelas de relação.
+        
+        Exemplo: GET /api/albums/1/get_owner/
+        """
+        album = self.get_object()
+        
+        # Verifica se há artistas associados (tabela Albumartist)
+        album_artists = models.Albumartist.objects.filter(album_PK_albumID=album)
+        if album_artists.exists():
+            artists = [rel.artist_PK_artistID for rel in album_artists]
+            serializer = serializers.ArtistSerializer(artists, many=True)
+            return Response({
+                'owner_type': 'artist',
+                'data': serializer.data
+            })
+            
+        # Se não houver artistas, verifica se há bandas associadas (tabela Albumband)
+        album_bands = models.Albumband.objects.filter(album_PK_albumID=album)
+        if album_bands.exists():
+            bands = [rel.band_PK_bandID for rel in album_bands]
+            serializer = serializers.BandSerializer(bands, many=True)
+            return Response({
+                'owner_type': 'band',
+                'data': serializer.data
+            })
+            
+        return Response(
+            {'detail': 'Nenhum artista ou banda associado a este álbum.'}, 
+            status=status.HTTP_404_NOT_FOUND
+        )
+
 class GeneroMusicalViewSet(viewsets.ModelViewSet):
     queryset = models.GeneroMusical.objects.all()
     serializer_class = serializers.GeneroMusicalSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+
+    @action(detail=True, methods=['get'])
+    def albums(self, request, pk=None):
+        """
+        Retorna todos os albums de um gênero específico.
+        
+        Exemplo: GET /api/generos/1/albums/
+        """
+        genero = self.get_object()
+        albums = models.Album.objects.filter(
+            songs__generomusical_idgeneroMusical=genero
+        ).distinct()
+        serializer = serializers.AlbumSerializer(albums, many=True)
+        return Response(serializer.data)
 
 class SongsViewSet(viewsets.ModelViewSet):
     queryset = models.Songs.objects.all()
@@ -40,6 +100,20 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.PlaylistSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+    
+    @action(detail=True, methods=['get'])
+    def songs(self, request, pk=None):
+        """
+        Retorna todas as músicas de uma playlist específica.
+        
+        Exemplo: GET /api/playlists/1/songs/
+        """
+        playlist = self.get_object()
+        songs = models.Songs.objects.filter(
+            songsplaylist__playlist_PK_playlistID=playlist
+        ).order_by('songsplaylist__ordem')
+        serializer = serializers.SongsSerializer(songs, many=True)
+        return Response(serializer.data)
     
     @action(detail=False, methods=['post'], serializer_class=serializers.CreatePlaylistSerializer)
     def create_playlist_for_user(self, request):
@@ -84,6 +158,19 @@ class UsersViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
 
+    @action(detail=True, methods=['get'])
+    def playlists(self, request, pk=None):
+        """
+        Retorna todas as playlists de um usuário específico.
+        
+        Exemplo: GET /api/users/1/playlists/
+        """
+        user = self.get_object()
+        user_playlists = models.Usersplaylists.objects.filter(users_PK_userID=user)
+        playlists = [up.playlist_PK_playlistID for up in user_playlists]
+        serializer = serializers.PlaylistSerializer(playlists, many=True)
+        return Response(serializer.data)
+
 class AlbumartistViewSet(viewsets.ModelViewSet):
     queryset = models.Albumartist.objects.all()
     serializer_class = serializers.AlbumartistSerializer
@@ -113,4 +200,3 @@ class UsersplaylistsViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.UsersplaylistsSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
-

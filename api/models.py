@@ -62,6 +62,8 @@ class Songs(models.Model):
 class Playlist(models.Model):
     PK_playlistID = models.AutoField(db_column='PK_playlistID', primary_key=True)
     plName = models.CharField(db_column='plName', max_length=45, blank=True, null=True)
+    description = models.CharField(db_column='description', max_length=2048, blank=True, null=True)
+    plImage = models.ImageField(upload_to='images/', blank=True, null=True, db_column='plImage')
 
     class Meta:
         managed = False

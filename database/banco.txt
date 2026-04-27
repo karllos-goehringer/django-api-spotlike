@@ -22,6 +22,8 @@ use spotlike
 CREATE TABLE IF NOT EXISTS `spotlike`.`playlist` (
   `PK_playlistID` INT NOT NULL AUTO_INCREMENT,
   `plName` VARCHAR(45) NULL DEFAULT NULL,
+  `description` VARCHAR(2048) NULL DEFAULT NULL,
+  `plImage` VARCHAR(2048) NULL DEFAULT NULL,
   PRIMARY KEY (`PK_playlistID`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 2
@@ -429,6 +431,3 @@ CREATE TABLE IF NOT EXISTS `spotlike`.`usersplaylists` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
-
-
-

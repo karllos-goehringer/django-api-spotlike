@@ -63,23 +63,64 @@ class UsersplaylistsSerializer(serializers.ModelSerializer):
 
 # Serializer personalizado para criar playlist
 class CreatePlaylistSerializer(serializers.Serializer):
-    plName = serializers.CharField(max_length=45, required=True)
+    plName = serializers.CharField(max_length=45, required=False, allow_blank=False)
+    description = serializers.CharField(max_length=2048, required=False, allow_blank=True)
+    plImage = serializers.ImageField(required=False)
+    user_id = serializers.IntegerField(required=False)
+    
+    def to_internal_value(self, data):
+        """
+        Aceita múltiplos nomes para o campo de nome da playlist.
+        Suporta: plName, playlist_name, name, title
+        """
+        # Cria uma cópia mutável dos dados
+        if hasattr(data, '_mutable'):
+            data._mutable = True
+        
+        # Se plName não está presente, tenta outros nomes
+        if 'plName' not in data:
+            for alt_name in ['imageUrl', 'name', 'title']:
+                if alt_name in data:
+                    data['plName'] = data[alt_name]
+                    break
+        
+        if hasattr(data, '_mutable'):
+            data._mutable = False
+        
+        return super().to_internal_value(data)
+    
+    def validate_plName(self, value):
+        """Valida se plName foi fornecido."""
+        if not value or not value.strip():
+            raise serializers.ValidationError("O nome da playlist é obrigatório.")
+        return value
     
     def create(self, validated_data):
         """
-        Cria uma nova playlist e associa ao usuário logado.
+        Cria uma nova playlist e associa ao usuário especificado ou logado.
         Retorna a instância da Usersplaylists criada.
         """
-        user = self.context['request'].user
-        
-        # Converte o usuário Django para modelo Users (se necessário)
-        try:
-            spotlike_user = models.Users.objects.get(pk_userid=user.id)
-        except models.Users.DoesNotExist:
-            raise serializers.ValidationError("Usuário não encontrado no banco de dados da aplicação.")
+        # Usa user_id passado ou o usuário autenticado
+        print(validated_data)
+        user_id = validated_data.get('user_id')
+        if user_id:
+            try:
+                spotlike_user = models.Users.objects.get(pk=user_id)
+            except models.Users.DoesNotExist:
+                raise serializers.ValidationError("Usuário não encontrado no banco de dados da aplicação.")
+        else:
+            user = self.context['request'].user
+            try:
+                spotlike_user = models.Users.objects.get(pk=user.id)
+            except models.Users.DoesNotExist:
+                raise serializers.ValidationError("Usuário não encontrado no banco de dados da aplicação.")
         
         # Cria a playlist
-        playlist = models.Playlist.objects.create(plName=validated_data['plName'])
+        playlist = models.Playlist.objects.create(
+            plName=validated_data['plName'],
+            description=validated_data.get('description'),
+            plImage=validated_data.get('plImage')
+        )
         
         # Cria a associação entre usuário e playlist
         usersplaylist = models.Usersplaylists.objects.create(

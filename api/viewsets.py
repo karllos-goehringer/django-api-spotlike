@@ -2,6 +2,7 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from api import models, serializers
 
 
@@ -100,6 +101,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.PlaylistSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
     
     @action(detail=True, methods=['get'])
     def songs(self, request, pk=None):
@@ -118,22 +120,44 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'], serializer_class=serializers.CreatePlaylistSerializer)
     def create_playlist_for_user(self, request):
         """
-        Cria uma nova playlist e associa au usuário logado.
+        Cria uma nova playlist e associa ao usuário especificado ou logado.
         
-        Exemplo de requisição:
+        Exemplo de requisição (form-data ou JSON):
         POST /api/playlists/create_playlist_for_user/
         {
-            "plName": "Minha Nova Playlist"
+            "plName": "Minha Nova Playlist",
+            "description": "Descrição opcional da playlist",
+            "plImage": [arquivo de imagem],
+            "user_id": 123 (opcional, usa usuário logado se não informado)
         }
         
-        Retorna os dados da associação criada (Usersplaylists).
+        O campo de nome pode ser enviado como:
+        - plName (padrão)
+        - playlist_name
+        - name
+        - title
+        
+        Retorna os dados da associação criada (Usersplaylists) com informações da playlist.
         """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         usersplaylist = serializer.save()
         
-        response_serializer = serializers.UsersplaylistsSerializer(usersplaylist)
-        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+        # Retorna dados da associação com dados completos da playlist
+        response_data = {
+            'id': usersplaylist.users_PK_userID.PK_userID,
+            'users_PK_userID': usersplaylist.users_PK_userID.PK_userID,
+            'playlist_PK_playlistID': usersplaylist.playlist_PK_playlistID.PK_playlistID,
+            'playlist': {
+                'PK_playlistID': usersplaylist.playlist_PK_playlistID.PK_playlistID,
+                'plName': usersplaylist.playlist_PK_playlistID.plName,
+                'description': usersplaylist.playlist_PK_playlistID.description,
+                'plImage': usersplaylist.playlist_PK_playlistID.plImage.url if usersplaylist.playlist_PK_playlistID.plImage else None,
+                'plImage_path': str(usersplaylist.playlist_PK_playlistID.plImage) if usersplaylist.playlist_PK_playlistID.plImage else None,
+            }
+        }
+        
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=['post'], serializer_class=serializers.AddSongPlaylistSerializer)
     def add_song(self, request):

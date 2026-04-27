@@ -18,5 +18,6 @@ router.register(r'usersplaylists', viewsets.UsersplaylistsViewSet)
 
 urlpatterns = [
     path('login/', views.login, name='login'),
+    path('upload/image/', views.upload_image, name='upload_image'),
     path('', include(router.urls)),
 ]

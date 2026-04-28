@@ -1,9 +1,18 @@
+import hashlib
+
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from django.db.models import Q
 from api import models, serializers
+
+
+def verify_password(raw_password: str, hashed_password: str) -> bool:
+    if not raw_password or not hashed_password:
+        return False
+    return hashlib.sha1(raw_password.encode('utf-8')).hexdigest() == hashed_password
 
 
 class ArtistViewSet(viewsets.ModelViewSet):
@@ -181,6 +190,57 @@ class UsersViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.UsersSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+
+    @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny], url_path='register')
+    def register(self, request):
+        """Registra um novo usuário na tabela Users com senha criptografada."""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        if models.Users.objects.filter(name=serializer.validated_data.get('name')).exists():
+            return Response({'detail': 'Nome de usuário já cadastrado.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        email = serializer.validated_data.get('email')
+        if email and models.Users.objects.filter(email=email).exists():
+            return Response({'detail': 'E-mail já cadastrado.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = serializer.save()
+        return Response({
+            'id': user.PK_userID,
+            'name': user.name,
+            'email': user.email,
+        }, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny], url_path='login')
+    def login(self, request):
+        """Autentica usuário por e-mail ou nome e retorna o ID do usuário."""
+        identifier = (
+            request.data.get('username')
+            or request.data.get('email')
+            or request.data.get('name')
+            or request.data.get('identifier')
+        )
+        password = request.data.get('password') or request.data.get('senha')
+
+        if not identifier or not password:
+            return Response(
+                {'detail': 'Nome de usuário ou e-mail e senha são obrigatórios.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user = models.Users.objects.filter(Q(name=identifier) | Q(email=identifier)).first()
+        if user is None or not verify_password(password, user.senha):
+            return Response(
+                {'detail': 'Usuário ou senha incorretos.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        return Response({'id': user.PK_userID}, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        user = self.get_object()
+        self.perform_destroy(user)
+        return Response({'detail': 'Usuário excluído com sucesso.'}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['get'])
     def playlists(self, request, pk=None):

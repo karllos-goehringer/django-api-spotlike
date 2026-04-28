@@ -1,10 +1,37 @@
+import hashlib
+
 from api import models
 from rest_framework import serializers
 
+def hash_password(raw_password: str) -> str:
+    return hashlib.sha1(raw_password.encode('utf-8')).hexdigest()
+
 class UsersSerializer(serializers.ModelSerializer):
+    senha = serializers.CharField(write_only=True)
+
     class Meta:
         model = models.Users
         fields = '__all__'
+        extra_kwargs = {
+            'senha': {'write_only': True},
+        }
+
+    def create(self, validated_data):
+        senha = validated_data.pop('senha', None)
+        if senha is not None:
+            validated_data['senha'] = hash_password(senha)
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        senha = validated_data.pop('senha', None)
+        if senha is not None:
+            instance.senha = hash_password(senha)
+        return super().update(instance, validated_data)
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data.pop('senha', None)
+        return data
 
 class ArtistSerializer(serializers.ModelSerializer):
     class Meta:

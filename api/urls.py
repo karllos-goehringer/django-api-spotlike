@@ -15,6 +15,7 @@ router.register(r'albumband', viewsets.AlbumbandViewSet)
 router.register(r'artistsband', viewsets.ArtistsbandViewSet)
 router.register(r'songsplaylist', viewsets.SongsplaylistViewSet)
 router.register(r'usersplaylists', viewsets.UsersplaylistsViewSet)
+router.register(r'search', viewsets.SearchViewSet, basename='search')
 
 urlpatterns = [
     path('login/', views.login, name='login'),

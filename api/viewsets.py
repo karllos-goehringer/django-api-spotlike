@@ -20,12 +20,32 @@ class ArtistViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ArtistSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
+
+    @action(detail=True, methods=['get'])
+    def albums(self, request, pk=None):
+        """Retorna todos os álbuns de um artista específico."""
+        artist = self.get_object()
+        album_artists = models.Albumartist.objects.filter(artist_PK_artistID=artist)
+        albums = [rel.album_PK_albumID for rel in album_artists]
+        serializer = serializers.AlbumSerializer(albums, many=True)
+        return Response(serializer.data)
 
 class BandViewSet(viewsets.ModelViewSet):
     queryset = models.Band.objects.all()
     serializer_class = serializers.BandSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
+
+    @action(detail=True, methods=['get'])
+    def albums(self, request, pk=None):
+        """Retorna todos os álbuns de uma banda específica."""
+        band = self.get_object()
+        album_bands = models.Albumband.objects.filter(band_PK_bandID=band)
+        albums = [rel.album_PK_albumID for rel in album_bands]
+        serializer = serializers.AlbumSerializer(albums, many=True)
+        return Response(serializer.data)
 
 class AlbumViewSet(viewsets.ModelViewSet):
     queryset = models.Album.objects.all()
@@ -173,6 +193,13 @@ class PlaylistViewSet(viewsets.ModelViewSet):
         """Adiciona uma música a uma playlist existente."""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        if models.Songsplaylist.objects.filter(
+            playlist_PK_playlistID=serializer.validated_data.get('playlist_id'),
+            songs_PK_songID=serializer.validated_data.get('song_id')
+        ).exists():
+            return Response({'detail': 'Música já adicionada a esta playlist.'}, status=status.HTTP_400_BAD_REQUEST)
+
         songsplaylist = serializer.save()
         response_serializer = serializers.SongsplaylistSerializer(songsplaylist)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
@@ -284,3 +311,34 @@ class UsersplaylistsViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.UsersplaylistsSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+
+class SearchViewSet(viewsets.ViewSet):
+    """
+    ViewSet para busca global em múltiplos modelos (Artista, Banda, Álbum e Música).
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+
+    def list(self, request):
+        """
+        Realiza uma busca baseada no parâmetro 'q'.
+        Exemplo: GET /api/search/?q=nome_do_item
+        """
+        query = request.query_params.get('q', '')
+        if not query:
+            return Response(
+                {'detail': 'O parâmetro de busca "q" é obrigatório.'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        artists = models.Artist.objects.filter(name__icontains=query)
+        bands = models.Band.objects.filter(name__icontains=query)
+        albums = models.Album.objects.filter(albumName__icontains=query)
+        songs = models.Songs.objects.filter(songtitle__icontains=query)
+
+        return Response({
+            'artists': serializers.ArtistSerializer(artists, many=True).data,
+            'bands': serializers.BandSerializer(bands, many=True).data,
+            'albums': serializers.AlbumSerializer(albums, many=True).data,
+            'songs': serializers.SongsSerializer(songs, many=True).data,
+        })

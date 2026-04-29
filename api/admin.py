@@ -5,10 +5,10 @@ class UsersAdmin(admin.ModelAdmin):
     list_display = ('PK_userID', 'email', 'profilepicture')
     pass
 class ArtistAdmin(admin.ModelAdmin):
-    list_display = ('PK_artistID', 'name', 'description', 'imageArtist')
+    list_display = ('PK_artistID', 'name', 'description', 'imageArtist', 'backgroundImage')
     pass
 class BandAdmin(admin.ModelAdmin):
-    list_display = ('PK_bandID', 'name', 'description', 'imageBand')
+    list_display = ('PK_bandID', 'name', 'description', 'imageBand', 'backgroundImage')
     pass
 class AlbumAdmin(admin.ModelAdmin):
     list_display = ('PK_albumID', 'albumName', 'releaseDate', 'albumimage')

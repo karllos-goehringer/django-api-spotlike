@@ -5,6 +5,7 @@ class Artist(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     imageArtist = models.ImageField(upload_to='images/', blank=True, null=True, db_column='imageArtist')
+    backgroundImage = models.ImageField(upload_to='images/', blank=True, null=True, db_column='backgroundImage')
 
     class Meta:
         managed = False
@@ -15,6 +16,7 @@ class Band(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=300, blank=True, null=True)
     imageBand = models.ImageField(upload_to='images/', blank=True, null=True, db_column='imageBand')
+    backgroundImage = models.ImageField(upload_to='images/', blank=True, null=True, db_column='backgroundImage')
 
     class Meta:
         managed = False

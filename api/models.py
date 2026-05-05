@@ -85,16 +85,18 @@ class Users(models.Model):
 # TABELAS INTERMEDIÁRIAS
 
 class Albumartist(models.Model):
-    artist_PK_artistID = models.ForeignKey(Artist, on_delete=models.CASCADE, db_column='artist_PK_artistID', primary_key=True)
+    artist_PK_artistID = models.ForeignKey(Artist, on_delete=models.CASCADE, db_column='artist_PK_artistID')
     album_PK_albumID = models.ForeignKey(Album, on_delete=models.CASCADE, db_column='album_PK_albumID')
 
     class Meta:
-        managed = False
+        managed = False  # Atenção a isso (leia abaixo)
         db_table = 'albumartist'
+        # Isso garante que o par Artista + Álbum seja único
         unique_together = (('artist_PK_artistID', 'album_PK_albumID'),)
 
 class Albumband(models.Model):
-    band_PK_bandID = models.ForeignKey(Band, on_delete=models.CASCADE, db_column='band_PK_bandID', primary_key=True)
+    # Removido o primary_key=True
+    band_PK_bandID = models.ForeignKey(Band, on_delete=models.CASCADE, db_column='band_PK_bandID')
     album_PK_albumID = models.ForeignKey(Album, on_delete=models.CASCADE, db_column='album_PK_albumID')
 
     class Meta:

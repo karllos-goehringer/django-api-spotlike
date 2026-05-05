@@ -67,16 +67,28 @@ class AlbumartistSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Albumartist
         fields = '__all__'
+        extra_kwargs = {
+            'artist_PK_artistID': {'validators': []},
+            'album_PK_albumID': {'validators': []}
+        }
 
 class AlbumbandSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Albumband
         fields = '__all__'
+        extra_kwargs = {
+            'band_PK_bandID': {'validators': []},
+            'album_PK_albumID': {'validators': []}
+        }
 
 class ArtistsbandSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Artistsband
         fields = '__all__'
+        extra_kwargs = {
+            'artist_PK_artistID': {'validators': []},
+            'band_PK_bandID': {'validators': []}
+        }
 
 class SongsplaylistSerializer(serializers.ModelSerializer):
     class Meta:
@@ -87,6 +99,10 @@ class UsersplaylistsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Usersplaylists
         fields = '__all__'
+        extra_kwargs = {
+            'users_PK_userID': {'validators': []},
+            'playlist_PK_playlistID': {'validators': []}
+        }
 
 # Serializer personalizado para criar playlist
 class CreatePlaylistSerializer(serializers.Serializer):

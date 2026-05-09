@@ -77,7 +77,8 @@ class Users(models.Model):
     email = models.CharField(max_length=250, blank=True, null=True)
     senha = models.CharField(max_length=45)
     profilepicture = models.ImageField(upload_to='images/', blank=True, null=True, db_column='profilePicture')
-
+    backgroundImage = models.ImageField(upload_to='images/', blank=True, null=True, db_column='backgroundImage')
+    description = models.CharField(max_length=2048, blank=True, null=True)
     class Meta:
         managed = False
         db_table = 'users'
